@@ -25,6 +25,7 @@ Summary of plot:
   11. While trying to fetch water to put out fire, he fell into the well and drowned
 
 Original Story (translated to English from German):
+
   Once upon a time a mouse, a bird, and a sausage formed a partnership. They kept house together, and for a long time they lived in peace and prosperity, acquiring many possessions. The bird's task was to fly into the forest every day to fetch wood. The mouse carried water, made the fire, and set the table. The sausage did the cooking.
 
 Whoever is too well off always wants to try something different! Thus one day the bird chanced to meet another bird, who boasted to him of his own situation. This bird criticized him for working so hard while the other two enjoyed themselves at home. For after the mouse had made the fire and carried the water, she could sit in the parlor and rest until it was time for her to set the table. The sausage had only to stay by the pot watching the food cook. When mealtime approached, she would slither through the porridge or the vegetables, and thus everything was greased and salted and ready to eat. The bird would bring his load of wood home. They would eat their meal, and then sleep soundly until the next morning. It was a great life.
