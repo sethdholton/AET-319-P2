@@ -14,21 +14,34 @@ int goodForestState = 0;
 int badWellState = 0;
 int goodWellState = 0;
 
-bool switchesOn = false;
+bool allDoingJobs = false;
 
 /*Testing LED*/
 int ledPin = 2;
 
 /*Bird Talking Variables*/
-bool firstStage = false;
-bool secondStage = false;
 
 Servo birdServo;
 int birdPos = 0;
+bool speech1 = true;
+bool speech2 = false;
+
+//death variables
+Servo wellServo;
+int wellPos = 0;
+
+Servo dogServo;
+int dogPos = 0;
+
+Servo fireServo;
+int firePos = 0;
 
 /*Timer Variables*/
 unsigned long previousMillis = 0;
 
+//Story Variables
+bool act1 = true;
+bool act2 = false;
 void setup()
 
 {
@@ -40,8 +53,18 @@ void setup()
   pinMode(goodWellSwitch, INPUT);
 
   pinMode(ledPin, OUTPUT);
-  birdServo.attach(6);
+  birdServo.attach(7);
   birdServo.write(0);
+
+  wellServo.attach(6);
+  wellServo.write(0);
+
+  dogServo.attach(5);
+  dogServo.write(0);
+
+  fireServo.attach(4);
+  fireServo.write(0);
+  
   digitalWrite(ledPin, LOW);
   Serial.begin(9600);
 }
@@ -56,9 +79,10 @@ void loop()
   goodForestState = digitalRead(goodForestSwitch);
   badWellState = digitalRead(badWellSwitch);
   goodWellState = digitalRead(goodWellSwitch);
-  
-  birdServo.write(birdPos);
 
+  if (act1 && !act2)
+  {
+  	Serial.println("act1");
   if (goodKitchState == HIGH && goodForestState == HIGH && 
       goodWellState == HIGH)
   {
@@ -69,33 +93,43 @@ void loop()
     digitalWrite(ledPin, LOW);
   }
   
-  if (goodKitchState == HIGH && goodForestState == HIGH && 
-      goodWellState == HIGH)
-  {
-  //digitalWrite(ledPin, HIGH);
-  switchesOn = true;
-  }
-  else
-  {
-    //digitalWrite(ledPin, LOW);
-    switchesOn = false;
-    firstStage = false;
-    secondStage = false;
-    birdPos = 0;
+    if (goodKitchState == HIGH && goodForestState == HIGH && 
+        goodWellState == HIGH){
+      digitalWrite(ledPin, HIGH);
+      allDoingJobs = true;
+    }
+    else{
+      digitalWrite(ledPin, LOW);
+      allDoingJobs = false;    
+    }
     
+    if (allDoingJobs && speech1 && !speech2){
+      birdServo.write(90);
+      act1 = false;
+      act2 = true;
+    }
   }
   
-  if (switchesOn && !firstStage){
-    birdPos = 90;
-    firstStage = true;
-    previousMillis = currentMillis;
+  if (act2 && !act1){
+    Serial.println("act2");
+    if (badForestState == HIGH){
+      dogServo.write(180);
+      if (speech1 && !speech2){
+        previousMillis = currentMillis;
+        speech1 = false;
+        speech2 = true;
+      }
+      Serial.println(currentMillis - previousMillis);
+      if (currentMillis - previousMillis >= 2000 && speech2){
+        birdServo.write(180);
+      }
+    }
+    if (badKitchState == HIGH){
+      fireServo.write(180);
+      birdServo.write(0);
+    }
+    if (badWellState == HIGH){
+      wellServo.write(180);
+    }
   }
-
-  
-  if (firstStage && !secondStage && currentMillis - previousMillis == 3000){
-    birdPos = 180;
-    secondStage = true;
-    
-  }
-
 }
