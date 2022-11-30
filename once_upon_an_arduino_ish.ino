@@ -1,11 +1,11 @@
 #include <Servo.h>
 /*Workstation Switch Variables*/
-int goodKitchSwitch = 13;
-int badKitchSwitch = 12;
-int badForestSwitch = 11;
-int goodForestSwitch = 10;
-int badWellSwitch = 9;
-int goodWellSwitch = 8;
+int goodKitchSwitch = 8;
+int badKitchSwitch = 9;
+int badForestSwitch = 10;
+int goodForestSwitch = 11;
+int badWellSwitch = 12;
+int goodWellSwitch = 13;
 
 int goodKitchState = 0;
 int badKitchState = 0;
@@ -22,7 +22,7 @@ int ledPin = 2;
 /*Bird Talking Variables*/
 
 Servo birdServo;
-int birdPos = 0;
+int birdPos = 180;
 bool speech1 = true;
 bool speech2 = false;
 
@@ -54,7 +54,7 @@ void setup()
 
   pinMode(ledPin, OUTPUT);
   birdServo.attach(7);
-  birdServo.write(0);
+  birdServo.write(180);
 
   wellServo.attach(6);
   wellServo.write(0);
@@ -63,7 +63,7 @@ void setup()
   dogServo.write(0);
 
   fireServo.attach(4);
-  fireServo.write(0);
+  fireServo.write(180);
   
   digitalWrite(ledPin, LOW);
   Serial.begin(9600);
@@ -82,7 +82,7 @@ void loop()
 
   if (act1 && !act2)
   {
-  	Serial.println("act1");
+    Serial.println("act1");
   if (goodKitchState == HIGH && goodForestState == HIGH && 
       goodWellState == HIGH)
   {
@@ -113,23 +113,25 @@ void loop()
   if (act2 && !act1){
     Serial.println("act2");
     if (badForestState == HIGH){
-      dogServo.write(180);
-      if (speech1 && !speech2){
+        dogServo.write(170);
+      
+      /*if (speech1 && !speech2){
         previousMillis = currentMillis;
         speech1 = false;
         speech2 = true;
       }
       Serial.println(currentMillis - previousMillis);
-      if (currentMillis - previousMillis >= 2000 && speech2){
-        birdServo.write(180);
-      }
+      if (currentMillis - previousMillis >= 2000 && speech2){*/
+        birdServo.write(0);
+      
     }
     if (badKitchState == HIGH){
-      fireServo.write(180);
-      birdServo.write(0);
+      fireServo.write(0);
+      birdServo.write(180);
     }
     if (badWellState == HIGH){
-      wellServo.write(180);
+      wellServo.write(80);
+      act2 = false;
     }
   }
 }
