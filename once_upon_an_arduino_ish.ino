@@ -1,11 +1,11 @@
 #include <Servo.h>
-/*Workstation Switch Variables*/
-int goodKitchSwitch = 8;
-int badKitchSwitch = 9;
-int badForestSwitch = 10;
-int goodForestSwitch = 11;
-int badWellSwitch = 12;
-int goodWellSwitch = 13;
+//Workstation Switch Variables
+int goodKitchSwitch = 12;
+int badKitchSwitch = 13;
+int badForestSwitch = 11;
+int goodForestSwitch = 10;
+int badWellSwitch = 9;
+int goodWellSwitch = 8;
 
 int goodKitchState = 0;
 int badKitchState = 0;
@@ -16,32 +16,44 @@ int goodWellState = 0;
 
 bool allDoingJobs = false;
 
-/*Testing LED*/
+//Testing LED
 int ledPin = 2;
 
-/*Bird Talking Variables*/
+//Servo Pins
+int birdPin = 7;
+int wellPin = 6;
+int dogPin = 5;
+int firePin = 4;
 
+//Bird Talking Variables
 Servo birdServo;
-int birdPos = 180;
-bool speech1 = true;
+bool speech1 = false;
 bool speech2 = false;
+bool birdTimer1 = false;
+bool birdTimer2 = false;
 
-//death variables
+//Death Variables
 Servo wellServo;
-int wellPos = 0;
+bool birdDeath = false;
 
 Servo dogServo;
-int dogPos = 0;
+bool sausDeath = false;
+bool dogTimer = true; 
 
 Servo fireServo;
-int firePos = 0;
+bool mouseDeath = false;
 
-/*Timer Variables*/
+//Clock Variables
 unsigned long previousMillis = 0;
 
 //Story Variables
 bool act1 = true;
+bool act1Message = false;
 bool act2 = false;
+bool act2Message = false;
+bool act3 = false;
+bool act3Message = false;
+
 void setup()
 
 {
@@ -53,24 +65,23 @@ void setup()
   pinMode(goodWellSwitch, INPUT);
 
   pinMode(ledPin, OUTPUT);
-  birdServo.attach(7);
+  birdServo.attach(birdPin);
   birdServo.write(180);
 
-  wellServo.attach(6);
+  wellServo.attach(wellPin);
   wellServo.write(0);
 
-  dogServo.attach(5);
+  dogServo.attach(dogPin);
   dogServo.write(0);
 
-  fireServo.attach(4);
+  fireServo.attach(firePin);
   fireServo.write(180);
   
   digitalWrite(ledPin, LOW);
   Serial.begin(9600);
 }
 
-void loop()
-{
+void loop(){
   unsigned long currentMillis = millis();
   
   goodKitchState = digitalRead(goodKitchSwitch);
@@ -80,21 +91,12 @@ void loop()
   badWellState = digitalRead(badWellSwitch);
   goodWellState = digitalRead(goodWellSwitch);
 
-  if (act1 && !act2)
-  {
-    Serial.println("act1");
-  if (goodKitchState == HIGH && goodForestState == HIGH && 
-      goodWellState == HIGH)
-  {
-    digitalWrite(ledPin, HIGH);
-  }
-  else
-  {
-    digitalWrite(ledPin, LOW);
-  }
-  
-    if (goodKitchState == HIGH && goodForestState == HIGH && 
-        goodWellState == HIGH){
+  if (act1 && !act2){
+    if (!act1Message){
+      act1Message = true;
+      Serial.println("act1");
+    }
+    if (goodKitchState == HIGH && goodForestState == HIGH && goodWellState == HIGH){
       digitalWrite(ledPin, HIGH);
       allDoingJobs = true;
     }
@@ -103,35 +105,64 @@ void loop()
       allDoingJobs = false;    
     }
     
-    if (allDoingJobs && speech1 && !speech2){
+    if (allDoingJobs && !speech1 && !speech2){
       birdServo.write(90);
+      speech1 = true;
       act1 = false;
       act2 = true;
-    }
+    } 
   }
   
   if (act2 && !act1){
-    Serial.println("act2");
-    if (badForestState == HIGH){
-        dogServo.write(170);
-      
-      /*if (speech1 && !speech2){
-        previousMillis = currentMillis;
-        speech1 = false;
-        speech2 = true;
-      }
-      Serial.println(currentMillis - previousMillis);
-      if (currentMillis - previousMillis >= 2000 && speech2){*/
-        birdServo.write(0);
-      
+    if (!act2Message){
+      act2Message = true;
+      Serial.println("act2");
     }
-    if (badKitchState == HIGH){
-      fireServo.write(0);
-      birdServo.write(180);
+    if (badForestState == HIGH && dogTimer){
+      previousMillis = currentMillis;
+      dogTimer = false;
+      sausDeath = true;
     }
-    if (badWellState == HIGH){
-      wellServo.write(80);
+    if (currentMillis - previousMillis >= 1000 && sausDeath){
+      dogServo.write(180);
+      sausDeath = false;
+      previousMillis = currentMillis;
+      birdTimer1 = true;
       act2 = false;
+      act3 = true;
+    }
+  }
+  
+  if (!act2 && act3){
+    if (!act3Message){
+       act3Message = true;
+       Serial.println("act3");
+    }
+    if (currentMillis - previousMillis >= 1000 && birdTimer1){
+      birdServo.write(0);
+      speech1 = false;
+      speech2 = true;
+      birdTimer1 = false;
+      mouseDeath = true;
+    }
+    
+    if (badKitchState == HIGH && mouseDeath){
+      Serial.println("successful mousedeath yuhh");
+      fireServo.write(10);
+      mouseDeath = false;
+      previousMillis = currentMillis;
+      birdTimer2 = true;
+    }
+    if (currentMillis - previousMillis >= 1000 && birdTimer2){
+      birdServo.write(180);
+      speech2 = false;
+      birdTimer2 = false;
+    }
+
+    if (badWellState == HIGH && !birdDeath){
+      wellServo.write(110);
+      birdDeath = false;
+      act3 = false;
     }
   }
 }
