@@ -157,9 +157,10 @@ void loop(){
       birdServo.write(180);
       speech2 = false;
       birdTimer2 = false;
+      birdDeath = true;
     }
 
-    if (badWellState == HIGH && !birdDeath){
+    if (badWellState == HIGH && birdDeath){
       wellServo.write(110);
       birdDeath = false;
       act3 = false;
