@@ -124,7 +124,7 @@ void loop(){
       sausDeath = true;
     }
     if (currentMillis - previousMillis >= 1000 && sausDeath){
-      dogServo.write(180);
+      dogServo.write(170);
       sausDeath = false;
       previousMillis = currentMillis;
       birdTimer1 = true;
